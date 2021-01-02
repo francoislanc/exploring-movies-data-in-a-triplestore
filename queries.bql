@@ -1,0 +1,6 @@
+# retrieve all triples
+SELECT ?m, ?p, ?o
+FROM ?g
+WHERE {
+    ?m ?p ?o
+};
