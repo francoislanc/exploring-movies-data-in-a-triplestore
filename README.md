@@ -16,7 +16,7 @@ python data_preparation.py
 
 ## Data querying
 
-- Install Badwolf triplestore
+- Install [Badwolf](http://google.github.io/badwolf/) triplestore
 
 ```
 go build github.com/google/badwolf/tools/vcli/bw
