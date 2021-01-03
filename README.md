@@ -22,14 +22,14 @@ python data_preparation.py
 go build github.com/google/badwolf/tools/vcli/bw
 ```
 
-- Run query in the BadWolf REPL (`bw bql`)
+- Run queries in the BadWolf REPL (`bw bql`)
 ```
 CREATE GRAPH ?g;
 load ./output/triples.bw ?g;
 run ./input/queries.bql;
 ```
 
-or the script directly :
+or run the script directly :
 ```
 bw run ./output/movies.bql
 ```
