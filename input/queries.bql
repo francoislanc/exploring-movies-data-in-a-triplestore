@@ -1,0 +1,53 @@
+# What are the top movies on Netflix according to the IMDb rating?
+SELECT ?movie, ?rating
+FROM ?g
+WHERE {
+    ?movie "average_rating"@[] ?rating .
+    ?movie "num_votes"@[] ?votes
+}
+ORDER BY ?rating DESC
+HAVING ?votes > "5000"^^type:int64
+LIMIT "10"^^type:int64;
+
+# What are the top countries producing the films?
+SELECT ?country, COUNT(?movie) AS ?movies_count
+FROM ?g
+WHERE {
+    ?movie "country"@[] ?country
+}
+GROUP BY ?country
+ORDER BY ?movies_count DESC
+LIMIT "10"^^type:int64;
+
+# Who are the cast members who appear in the most Netflix Movies?
+SELECT ?person, COUNT(?movie) AS ?movies_count
+FROM ?g
+WHERE {
+    ?person "played"@[] ?movie
+}
+GROUP BY ?person
+ORDER BY ?movies_count DESC
+LIMIT "10"^^type:int64;
+
+# What are the top movies added on Netflix between May 2018 and August 2018
+SELECT ?movie, ?time, ?rating
+FROM ?g
+WHERE {
+    /platform<Netflix> "added"@[?time] ?movie .
+    ?movie "average_rating"@[] ?rating .
+    ?movie "num_votes"@[] ?votes
+}
+ORDER BY ?rating DESC
+HAVING ?votes > "5000"^^type:int64
+BETWEEN 2018-05-01T00:00:00Z, 2018-08-31T00:00:00Z
+LIMIT "10"^^type:int64;
+
+# What is the last movie from Steven Spielberg added on Netflix?
+SELECT ?movie, ?time
+FROM ?g
+WHERE {
+    /platform<Netflix> "added"@[?time] ?movie .
+    /person<Steven Spielberg> "directed"@[] ?movie
+}
+ORDER BY ?time DESC
+LIMIT "1"^^type:int64;

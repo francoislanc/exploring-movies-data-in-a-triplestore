@@ -60,9 +60,9 @@ def movie_added_date(title: str, date: str) -> List[str]:
 
 
 if __name__ == "__main__":
-    movies = pd.read_csv("movies.csv")
+    movies = pd.read_csv("input/movies.csv")
 
-    with open("movies.bql", "w") as f, open("triples.bw", "w") as ft:
+    with open("output/movies.bql", "w") as f, open("output/triples.bw", "w") as ft:
         f.write("CREATE GRAPH ?g;\n")
         f.write("INSERT DATA into ?g {\n")
         sep = ""
@@ -121,6 +121,6 @@ if __name__ == "__main__":
             # has genre, numVotes, averageRating, desc, duration, title
         f.write("};\n")
 
-        with open("queries.bql", "r") as fq:
+        with open("input/queries.bql", "r") as fq:
             queries = fq.read()
             f.write(queries)

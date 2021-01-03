@@ -8,7 +8,7 @@
 pip install -r requirements.txt
 ```
 
-- Create triples and BQL statements. It will generate the "movies.bql" file.
+- Create triples and BQL statements. It will generate the "output/movies.bql" and "output/triples.bw" files.
 
 ```
 python data_preparation.py
@@ -23,11 +23,18 @@ go build github.com/google/badwolf/tools/vcli/bw
 ```
 
 - Run query in the BadWolf REPL (`bw bql`)
-
 ```
 CREATE GRAPH ?g;
-load ./movies-triples.txt ?g;
-run queries.bql;
+load ./output/triples.bw ?g;
+run ./input/queries.bql;
+```
+
+or the script directly :
+```
+bw run ./output/movies.bql
 ```
 
 ## Triplestore visualisation
+
+Open `graph_viewer.html` in a browser.
+The nodes and edges are manually specified in the html file.
