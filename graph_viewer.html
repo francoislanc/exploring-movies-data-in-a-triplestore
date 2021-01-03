@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Graph viewer</title>
+</head>
+
+<body>
+    <div id="mountNode"></div>
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.7.1/dist/g6.min.js"></script>
+    <script>
+        const globalFontSize = 12;
+        const fittingString = (str, maxWidth, fontSize) => {
+            const ellipsis = '...';
+            const ellipsisLength = G6.Util.getTextSize(ellipsis, fontSize)[0];
+            let currentWidth = 0;
+            let res = str;
+            const pattern = new RegExp('[\u4E00-\u9FA5]+'); // distinguish the Chinese charactors and letters
+            str.split('').forEach((letter, i) => {
+                if (currentWidth > maxWidth - ellipsisLength) return;
+                if (pattern.test(letter)) {
+                    // Chinese charactors
+                    currentWidth += fontSize;
+                } else {
+                    // get the width of single letter according to the fontSize
+                    currentWidth += G6.Util.getLetterWidth(letter, fontSize);
+                }
+                if (currentWidth > maxWidth - ellipsisLength) {
+                    res = `${str.substr(0, i)}${ellipsis}`;
+                }
+            });
+            return res;
+        };
+
+        const graph = new G6.Graph({
+            container: 'mountNode',
+            width: 1600,
+            height: 900,
+            // Default properties for all the nodes
+            defaultNode: {
+                labelCfg: {
+                    style: {
+                        fill: '#fff',
+                    },
+                },
+            },
+            // Default properties for all the edges
+            defaultEdge: {
+                labelCfg: {
+                    autoRotate: true,
+                }
+            },
+            // The node styles in different states
+            nodeStateStyles: {
+                // The node style when the state 'hover' is true
+                hover: {
+                    fill: '#000',
+                },
+                // The node style when the state 'click' is true
+                click: {
+                    stroke: '#000',
+                    lineWidth: 3,
+                },
+            },
+            // The edge styles in different states
+            edgeStateStyles: {
+                // The edge style when the state 'click' is true
+                click: {
+                    stroke: '#000',
+                },
+            },
+            // Layout
+            layout: {
+                type: 'force',
+                linkDistance: 100,
+                preventOverlap: true,
+                nodeStrength: -30,
+                edgeStrength: 0.1,
+            },
+            // Built-in Behaviors
+            modes: {
+                default: ['zoom-canvas', 'drag-node'],
+            },
+        });
+
+        const main = async () => {
+            const remoteData = {
+                "nodes": [
+                    { "id": "0", "label": "/movie<catch me if you can>", "class": "movie" },
+                    { "id": "1", "label": "An FBI agent makes it his mission to put cunning con man Frank Abagnale Jr behind bars But ", "class": "properties" },
+                    { "id": "2", "label": "142", "class": "properties" },
+                    { "id": "3", "label": "/person<Steven Spielberg>", "class": "person" },
+                    { "id": "4", "label": "/person<Leonardo DiCaprio>", "class": "person" },
+                    { "id": "5", "label": "/person<Tom Hanks>", "class": "person" },
+                    { "id": "6", "label": "/person<Christopher Walken>", "class": "person" },
+                    { "id": "7", "label": "/platform<Netflix>", "class": "platform" },
+                    { "id": "7", "label": "/platform<Netflix>", "class": "platform" },
+                    { "id": "8", "label": "/movie<Lincoln>", "class": "movie" },
+                ],
+                "edges": [
+                    { "source": "0", "target": "1", "label": "description", "weight": 1 },
+                    { "source": "0", "target": "2", "label": "duration", "weight": 1 },
+                    { "source": "3", "target": "0", "label": "directed", "weight": 1 },
+                    { "source": "4", "target": "0", "label": "played", "weight": 1 },
+                    { "source": "5", "target": "0", "label": "played", "weight": 1 },
+                    { "source": "6", "target": "0", "label": "played", "weight": 1 },
+                    { "source": "7", "target": "0", "label": "added@[2020-01-01T00:00:00Z]", "weight": 1 },
+                    { "source": "3", "target": "8", "label": "directed", "weight": 1 },
+                    { "source": "7", "target": "8", "label": "added@[2018-02-21T00:00:00Z]", "weight": 1 },
+                ]
+            }
+
+            const nodes = remoteData.nodes;
+            const edges = remoteData.edges;
+            nodes.forEach((node) => {
+                if (!node.style) {
+                    node.style = {};
+                }
+                node.style.lineWidth = 2;
+                node.style.stroke = '#666';
+                switch (node.class) {
+                    case 'movie': {
+                        node.style.fill = '#176BA0';
+                        node.type = "rect";
+                        node.size = [200, 30];
+                        break;
+                    }
+                    case 'properties': {
+                        node.style.fill = '#7F3AC1';
+                        node.type = "rect";
+                        node.size = [200, 30];
+                        break;
+                    }
+
+                    case 'person': {
+                        node.style.fill = '#EF7E32';
+                        node.type = "rect";
+                        node.size = [200, 30];
+                        break;
+                    }
+
+                    case 'platform': {
+                        node.style.fill = '#820401';
+                        node.type = "rect";
+                        node.size = [200, 30];
+                        break;
+                    }
+                }
+            });
+            edges.forEach((edge) => {
+                if (!edge.style) {
+                    edge.style = {};
+                }
+                edge.style.lineWidth = 2;
+                edge.style.opacity = 1;
+                edge.style.stroke = '#666';
+                edge.style.endArrow = true;
+
+                edge.labelCfg = {
+                    style: {
+                        fontSize: globalFontSize
+                    }
+                }
+            });
+
+            nodes.forEach(function (node) {
+                node.label = fittingString(node.label, node.size[0], globalFontSize);
+            });
+            edges.forEach(function (edge) {
+                edge.label = fittingString(edge.label, 120, globalFontSize);
+            });
+
+            graph.data(remoteData);
+            graph.render();
+
+            // Mouse enter a node
+            graph.on('node:mouseenter', (e) => {
+                const nodeItem = e.item; // Get the target item
+                graph.setItemState(nodeItem, 'hover', true); // Set the state 'hover' of the item to be true
+            });
+
+            // Mouse leave a node
+            graph.on('node:mouseleave', (e) => {
+                const nodeItem = e.item; // Get the target item
+                graph.setItemState(nodeItem, 'hover', false); // Set the state 'hover' of the item to be false
+            });
+
+            // Click a node
+            /*graph.on('node:click', (e) => {
+                // Swich the 'click' state of the node to be false
+                const clickNodes = graph.findAllByState('node', 'click');
+                clickNodes.forEach((cn) => {
+                    graph.setItemState(cn, 'click', false);
+                });
+                const nodeItem = e.item; // et the clicked item
+                graph.setItemState(nodeItem, 'click', true); // Set the state 'click' of the item to be true
+            });*/
+
+            // Click an edge
+            graph.on('edge:click', (e) => {
+                // Swich the 'click' state of the edge to be false
+                const clickEdges = graph.findAllByState('edge', 'click');
+                clickEdges.forEach((ce) => {
+                    graph.setItemState(ce, 'click', false);
+                });
+                const edgeItem = e.item; // Get the clicked item
+                graph.setItemState(edgeItem, 'click', true); // Set the state 'click' of the item to be true
+            });
+        };
+        main();
+    </script>
+</body>
+
+</html>
